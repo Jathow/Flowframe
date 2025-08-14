@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useAppStore } from '../../src/state/store';
+import { computeWeeklyInsights } from '../../src/engine/insights';
 
 const LOCAL_USER_ID = 'local-user';
 
@@ -25,6 +26,7 @@ export default function ReviewPage() {
   };
 
   const recent = useMemo(() => moods.filter((m) => m.userId === LOCAL_USER_ID).slice(-7).reverse(), [moods]);
+  const insights = useMemo(() => computeWeeklyInsights(moods.filter((m) => m.userId === LOCAL_USER_ID)), [moods]);
 
   return (
     <main>
@@ -62,6 +64,23 @@ export default function ReviewPage() {
                 <strong>{m.date}</strong>
                 <span style={{ marginLeft: 8 }}>Mood {m.mood}</span>
                 <span style={{ marginLeft: 8 }}>Energy {m.energy}</span>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
+      <section style={{ marginTop: 24 }}>
+        <h2>Insights</h2>
+        <div style={{ display: 'grid', gap: 8 }}>
+          {insights.length === 0 ? (
+            <p style={{ color: 'var(--muted)' }}>No insights yet.</p>
+          ) : (
+            insights.map((i, idx) => (
+              <div key={idx} style={{ border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, padding: 8 }}>
+                <strong style={{ textTransform: 'capitalize' }}>{i.metric.replace('_', ' ')}</strong>
+                <span style={{ marginLeft: 8 }}>{i.value}</span>
+                {i.note && <div style={{ color: 'var(--muted)' }}>{i.note}</div>}
               </div>
             ))
           )}
