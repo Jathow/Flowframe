@@ -2,6 +2,7 @@
 
 import { DndContext, useDraggable, useDroppable, DragEndEvent } from '@dnd-kit/core';
 import { useMemo, useState } from 'react';
+import { EmptyState, SkeletonBlock } from '../ui';
 import { scheduleDay } from '../../src/engine/schedule';
 import { scoreSchedule } from '../../src/engine/confidence';
 import { preferredDeepWindows as _preferredDeepWindows } from '../../src/engine/schedule';
@@ -181,10 +182,18 @@ export default function PlanPage() {
 		}
 	};
 
+	// Loading skeleton placeholder (MVP: lightweight, always visible very briefly)
+	const loading = false;
+
 	return (
 		<main>
 			<h1>Plan</h1>
 			<p style={{ color: 'var(--muted)' }}>Drag items from backlog into day slots.</p>
+			{loading && (
+				<div style={{ margin: '12px 0' }}>
+					<SkeletonBlock lines={3} />
+				</div>
+			)}
 			<div style={{ margin: '12px 0', padding: 8, border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}>
 				<strong style={{ fontSize: 14 }}>Auto-schedule (demo)</strong>
 				<p style={{ color: 'var(--muted)' }}>Generate a plan and show confidence.</p>
@@ -255,20 +264,24 @@ export default function PlanPage() {
 							</div>
 						</div>
 						<div style={{ display: 'grid', gap: 8 }}>
-							{[...backlog, ...customBacklog].map((b) => (
-								<Draggable key={b.id} id={b.id} title={b.title} type={b.type} />
-							))}
+							{[...backlog, ...customBacklog].length === 0 ? (
+								<EmptyState title="No backlog yet" description="Use quick capture or the form to add tasks." />
+							) : (
+								[...backlog, ...customBacklog].map((b) => (
+									<Draggable key={b.id} id={b.id} title={b.title} type={b.type} />
+								))
+							)}
 						</div>
 					</div>
 					<div style={{ display: 'grid', gap: 12 }}>
 						<h2>Today</h2>
-						<label>Morning< Droppable id="morning">{slots.morning.map((s) => (
+						<label>Morning< Droppable id="morning">{slots.morning.length === 0 ? <EmptyState title="Nothing planned" description="Drag items here to plan your morning." /> : slots.morning.map((s) => (
 							<SlotBlock key={s.id} slotId="morning" item={s} onResize={resizeItem} onMove={moveItemToSlot} />
 						))}</Droppable></label>
-						<label>Afternoon< Droppable id="afternoon">{slots.afternoon.map((s) => (
+						<label>Afternoon< Droppable id="afternoon">{slots.afternoon.length === 0 ? <EmptyState title="Nothing planned" description="Drag items here to plan your afternoon." /> : slots.afternoon.map((s) => (
 							<SlotBlock key={s.id} slotId="afternoon" item={s} onResize={resizeItem} onMove={moveItemToSlot} />
 						))}</Droppable></label>
-						<label>Evening< Droppable id="evening">{slots.evening.map((s) => (
+						<label>Evening< Droppable id="evening">{slots.evening.length === 0 ? <EmptyState title="Nothing planned" description="Drag items here to plan your evening." /> : slots.evening.map((s) => (
 							<SlotBlock key={s.id} slotId="evening" item={s} onResize={resizeItem} onMove={moveItemToSlot} />
 						))}</Droppable></label>
 					</div>
