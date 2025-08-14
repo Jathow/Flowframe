@@ -9,6 +9,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "next dev",
+		"dev:desktop": "concurrently -k \"npm run dev\" \"npm --workspace planner-desktop run dev\"",
 		"build": "next build",
 		"start": "next start",
 		"type-check": "tsc --noEmit",
@@ -34,6 +35,7 @@
 		"zustand": "^4.5.2"
 	},
 	"devDependencies": {
+		"concurrently": "^9.0.1",
 		"@axe-core/playwright": "^4.9.0",
 		"@commitlint/cli": "^19.3.0",
 		"@commitlint/config-conventional": "^19.2.2",
