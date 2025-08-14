@@ -27,6 +27,9 @@ export default function HomePage() {
             <p>
                 <a href="/review" style={{ color: 'var(--accent)' }}>Review (mood/energy)</a>
             </p>
+            <p>
+                <a href="/sync" style={{ color: 'var(--accent)' }}>Sync (snapshot)</a>
+            </p>
         </main>
     );
 }

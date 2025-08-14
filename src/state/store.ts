@@ -38,6 +38,9 @@ type Actions = {
 	deleteBlock: (id: string) => Promise<void>;
   // Mood logs
   addMood: (input: Omit<MoodLog, 'id'> & { id?: string }) => Promise<string>;
+	// Sync helpers
+	exportSnapshot: () => Promise<EntitiesState>;
+	importSnapshot: (snap: Partial<EntitiesState>) => Promise<void>;
 };
 
 type MetaState = {
@@ -145,7 +148,34 @@ export const useAppStore = create<AppState>()(
         await db.moods.add(mood);
         set({ moods: [...get().moods, mood] });
         return id;
-      }
+			},
+
+			exportSnapshot: async () => {
+				const { users, preferences, constraints, tasks, blocks, insights, moods } = get();
+				return { users, preferences, constraints, tasks, blocks, insights, moods } as EntitiesState;
+			},
+
+			importSnapshot: async (snap) => {
+				const db = getDb();
+				await db.transaction('rw', db.users, db.preferences, db.constraints, db.tasks, db.blocks, db.insights, db.moods, async () => {
+					if (snap.users) { await db.users.clear(); await db.users.bulkAdd(snap.users as any); }
+					if (snap.preferences) { await db.preferences.clear(); await db.preferences.bulkAdd(snap.preferences as any); }
+					if (snap.constraints) { await db.constraints.clear(); await db.constraints.bulkAdd(snap.constraints as any); }
+					if (snap.tasks) { await db.tasks.clear(); await db.tasks.bulkAdd(snap.tasks as any); }
+					if (snap.blocks) { await db.blocks.clear(); await db.blocks.bulkAdd(snap.blocks as any); }
+					if (snap.insights) { await db.insights.clear(); await db.insights.bulkAdd(snap.insights as any); }
+					if (snap.moods) { await db.moods.clear(); await db.moods.bulkAdd(snap.moods as any); }
+				});
+				set({
+					users: snap.users ?? get().users,
+					preferences: snap.preferences ?? get().preferences,
+					constraints: snap.constraints ?? get().constraints,
+					tasks: snap.tasks ?? get().tasks,
+					blocks: snap.blocks ?? get().blocks,
+					insights: snap.insights ?? get().insights,
+					moods: snap.moods ?? get().moods
+				});
+			}
 		}),
 		{
 			name: 'planner-store-v1',
