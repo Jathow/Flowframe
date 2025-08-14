@@ -10,6 +10,7 @@ import { computeAutoThrottle, adjustPreferencesForThrottle, adjustBufferMinutes 
 import { useAppStore } from '../../src/state/store';
 import { suggestWeeklyCapacity } from '../../src/engine/capacity';
 import { distributeTasksAcrossWeek } from '../../src/engine/weekly';
+import { suggestWorkoutsForNextWeek } from '../../src/engine/health';
 
 type BlockType = 'deep' | 'shallow' | 'break' | 'sleep' | 'commute' | 'workout' | 'meal' | 'buffer';
 type BlockItem = { id: string; title: string; minutes: number; type: BlockType };
@@ -234,6 +235,17 @@ export default function PlanPage() {
 				>
 					Generate
 				</button>
+                <button
+                    onClick={() => {
+                        const prefs = { userId: 'u', areaWeights: { work: 5 }, deepWorkCapacity: 2, breakPreference: 5, sleepTargetHours: 8, weeklyModerateMinutesTarget: 150, weeklyStrengthDaysTarget: 2 } as any;
+                        const workouts = suggestWorkoutsForNextWeek(prefs);
+                        const summary = workouts.map((w) => `${w.dateISO} ${w.startTime} • ${w.label} (${w.minutes}m)`).join('\n');
+                        alert(`Suggested workouts next week:\n${summary}`);
+                    }}
+                    style={{ marginLeft: 8, padding: '6px 10px', borderRadius: 8, border: 0, background: '#374151', color: 'var(--text)', cursor: 'pointer' }}
+                >
+                    Suggest workouts
+                </button>
 				<button
 					onClick={() => {
 						const constraints: any[] = [];
