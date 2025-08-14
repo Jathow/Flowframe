@@ -8,6 +8,7 @@ import { scoreSchedule } from '../../src/engine/confidence';
 import { preferredDeepWindows as _preferredDeepWindows } from '../../src/engine/schedule';
 import { computeAutoThrottle, adjustPreferencesForThrottle, adjustBufferMinutes } from '../../src/engine/adaptive';
 import { useAppStore } from '../../src/state/store';
+import { suggestWeeklyCapacity } from '../../src/engine/capacity';
 
 type BlockType = 'deep' | 'shallow' | 'break' | 'sleep' | 'commute' | 'workout' | 'meal' | 'buffer';
 type BlockItem = { id: string; title: string; minutes: number; type: BlockType };
@@ -231,6 +232,16 @@ export default function PlanPage() {
 					style={{ padding: '6px 10px', borderRadius: 8, border: 0, background: 'var(--accent)', color: 'var(--accent-contrast)', cursor: 'pointer' }}
 				>
 					Generate
+				</button>
+				<button
+					onClick={() => {
+						const constraints: any[] = [];
+						const cap = suggestWeeklyCapacity(constraints as any, { bufferPercent: 15 });
+						alert(`Next week start: ${cap.weekStartISO}\nTotal free: ${Math.round(cap.totalFreeMinutes / 60)}h\nDaily: ${cap.dailyFreeMinutes.map((m) => Math.round(m / 60)).join(', ')}h`);
+					}}
+					style={{ marginLeft: 8, padding: '6px 10px', borderRadius: 8, border: 0, background: '#374151', color: 'var(--text)', cursor: 'pointer' }}
+				>
+					Suggest next week capacity
 				</button>
 			</div>
 			<DndContext onDragEnd={onDragEnd}>
