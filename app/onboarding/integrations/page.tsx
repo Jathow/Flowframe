@@ -2,7 +2,6 @@
 
 import Papa from 'papaparse';
 import { useState } from 'react';
-import { nanoid } from 'nanoid';
 import { useAppStore } from '../../../src/state/store';
 import type { Task } from '../../../src/models/task';
 
@@ -38,6 +37,8 @@ export default function IntegrationsPage() {
 	const addConstraint = useAppStore((s) => s.addConstraint);
 	const [icsCount, setIcsCount] = useState<number | null>(null);
 	const [csvCount, setCsvCount] = useState<number | null>(null);
+	const [googleCount, setGoogleCount] = useState<number | null>(null);
+	const [msCount, setMsCount] = useState<number | null>(null);
 
 	const onIcsUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -55,6 +56,65 @@ export default function IntegrationsPage() {
 			} as any);
 		}
 		setIcsCount(events.length);
+	};
+
+	// Stub connectors for Google/Microsoft read-only import
+	function simulateGoogleEvents(): { summary: string; start: string; end: string }[] {
+		const now = new Date();
+		const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+		const e1Start = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0);
+		const e1End = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 11, 0);
+		const e2Start = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 0);
+		const e2End = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 30);
+		const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+		const e3Start = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 9, 30);
+		const e3End = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 10, 0);
+		return [
+			{ summary: 'Google: Standup', start: e1Start.toISOString(), end: e1End.toISOString() },
+			{ summary: 'Google: 1:1', start: e2Start.toISOString(), end: e2End.toISOString() },
+			{ summary: 'Google: Daily planning', start: e3Start.toISOString(), end: e3End.toISOString() }
+		];
+	}
+
+	function simulateMicrosoftEvents(): { summary: string; start: string; end: string }[] {
+		const now = new Date();
+		const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+		const e1Start = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 12, 0);
+		const e1End = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 12, 45);
+		const e2Start = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 16, 0);
+		const e2End = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 17, 0);
+		return [
+			{ summary: 'Microsoft: Lunch catch-up', start: e1Start.toISOString(), end: e1End.toISOString() },
+			{ summary: 'Microsoft: Status review', start: e2Start.toISOString(), end: e2End.toISOString() }
+		];
+	}
+
+	const onConnectGoogleStub = async () => {
+		const events = simulateGoogleEvents();
+		for (const ev of events) {
+			await addConstraint({
+				userId: LOCAL_USER_ID,
+				type: 'fixed',
+				start: ev.start,
+				end: ev.end,
+				label: ev.summary
+			} as any);
+		}
+		setGoogleCount(events.length);
+	};
+
+	const onConnectMicrosoftStub = async () => {
+		const events = simulateMicrosoftEvents();
+		for (const ev of events) {
+			await addConstraint({
+				userId: LOCAL_USER_ID,
+				type: 'fixed',
+				start: ev.start,
+				end: ev.end,
+				label: ev.summary
+			} as any);
+		}
+		setMsCount(events.length);
 	};
 
 	const onCsvUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,12 +146,21 @@ export default function IntegrationsPage() {
 	return (
 		<main>
 			<h1>Integrations</h1>
-			<p style={{ color: 'var(--muted)' }}>Import calendars (ICS) and tasks (CSV) for the MVP.</p>
+			<p style={{ color: 'var(--muted)' }}>Import calendars (ICS) and tasks (CSV). Connectors below are read-only stubs.</p>
 			<section style={{ display: 'grid', gap: 16, maxWidth: 720, marginTop: 16 }}>
 				<div>
 					<h2>Calendar import (ICS)</h2>
 					<input type="file" accept="text/calendar,.ics" onChange={onIcsUpload} />
 					{icsCount !== null && <p style={{ color: 'var(--muted)' }}>Imported {icsCount} events</p>}
+				</div>
+				<div>
+					<h2>Calendar connect (Google/Microsoft) — stub</h2>
+					<div style={{ display: 'flex', gap: 8 }}>
+						<button onClick={onConnectGoogleStub}>Connect Google (stub)</button>
+						<button onClick={onConnectMicrosoftStub}>Connect Microsoft (stub)</button>
+					</div>
+					{googleCount !== null && <p style={{ color: 'var(--muted)' }}>Imported {googleCount} Google events</p>}
+					{msCount !== null && <p style={{ color: 'var(--muted)' }}>Imported {msCount} Microsoft events</p>}
 				</div>
 				<div>
 					<h2>Task import (CSV)</h2>
