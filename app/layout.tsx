@@ -7,6 +7,7 @@ import { AnalyticsProvider } from './analytics-optin';
 import { AnalyticsRouter } from './analytics-router';
 import { InitState } from './init-state';
 import { PushOptIn } from './push-optin';
+import { BreakTimer } from './break-timer';
 
 export const metadata: Metadata = {
 	title: 'Planner',
@@ -22,13 +23,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 				<link rel="icon" href="/icon.svg" />
 			</head>
 			<body>
+				<a href="#main" className="skip-link">Skip to main content</a>
 				<AnalyticsProvider>
 					<PwaUi />
 					<PushOptIn />
+					<BreakTimer />
 					<ThemeToolbar />
 					<AnalyticsRouter />
 					<InitState />
-					{children}
+					<main id="main" role="main">
+						{children}
+					</main>
 				</AnalyticsProvider>
 			</body>
 		</html>
