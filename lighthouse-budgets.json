@@ -1,0 +1,17 @@
+[
+	{
+		"path": "/*",
+		"resourceSizes": [
+			{ "resourceType": "total", "budget": 300 },
+			{ "resourceType": "script", "budget": 180 },
+			{ "resourceType": "document", "budget": 30 },
+			{ "resourceType": "font", "budget": 80 },
+			{ "resourceType": "image", "budget": 60 }
+		],
+		"timings": [
+			{ "metric": "interactive", "budget": 4000 },
+			{ "metric": "total-blocking-time", "budget": 200 },
+			{ "metric": "cumulative-layout-shift", "budget": 0.1 }
+		]
+	}
+]

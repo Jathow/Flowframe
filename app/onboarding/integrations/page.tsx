@@ -1,6 +1,4 @@
 'use client';
-
-import Papa from 'papaparse';
 import { useState } from 'react';
 import { useAppStore } from '../../../src/state/store';
 import type { Task } from '../../../src/models/task';
@@ -210,7 +208,8 @@ export default function IntegrationsPage() {
 		const file = e.target.files?.[0];
 		if (!file) return;
 		const csv = await file.text();
-		const parsed = Papa.parse(csv, { header: true });
+		const PapaNS = await import('papaparse');
+		const parsed = PapaNS.parse(csv, { header: true });
 		let count = 0;
 		for (const row of parsed.data as any[]) {
 			const title = String(row.title || row.Name || row.Task || '').trim();

@@ -21,7 +21,8 @@
 		"test:watch": "vitest",
 		"e2e": "playwright test",
 		"e2e:ui": "playwright test --ui",
-		"e2e:install": "playwright install"
+		"e2e:install": "playwright install",
+		"lh:ci": "npx -y lighthouse http://localhost:3000 --quiet --budgets-path=./lighthouse-budgets.json --only-categories=performance --chrome-flags=\"--headless=new\""
 	},
 	"dependencies": {
 		"@dnd-kit/core": "^6.3.1",
