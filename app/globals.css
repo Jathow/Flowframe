@@ -1,0 +1,102 @@
+:root {
+	--font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+	--radius: 10px;
+}
+
+/* Default dark theme (dark-first) */
+html {
+	color-scheme: dark;
+	--bg: #0b0b0b;
+	--surface: #111827; /* gray-900 */
+	--text: #e5e7eb; /* gray-200 */
+	--muted: #9ca3af; /* gray-400 */
+	--accent: #22d3ee; /* cyan-400 */
+	--accent-contrast: #05272b;
+}
+
+/* Light theme */
+html[data-theme="light"] {
+	color-scheme: light;
+	--bg: #f8fafc; /* slate-50 */
+	--surface: #ffffff;
+	--text: #0b0f19; /* near-black */
+	--muted: #334155; /* slate-700 */
+	--accent: #0ea5e9; /* sky-500 */
+	--accent-contrast: #06211a;
+}
+
+/* High contrast adjustments */
+html[data-contrast="high"] {
+	--text: #ffffff;
+	--bg: #000000;
+	--surface: #0a0a0a;
+	--accent: #00ffff;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	* {
+		animation-duration: 0.001ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.001ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* Honor explicit user motion preference via data attribute */
+html[data-motion="reduce"] * {
+	animation-duration: 0.001ms !important;
+	animation-iteration-count: 1 !important;
+	transition-duration: 0.001ms !important;
+	scroll-behavior: auto !important;
+}
+
+/* Base layout */
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	background: var(--bg);
+	color: var(--text);
+	font-family: var(--font-sans);
+}
+
+main {
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 24px 16px 64px;
+}
+
+.toolbar {
+	position: fixed;
+	top: 12px;
+	right: 12px;
+	display: flex;
+	gap: 8px;
+	background: var(--surface);
+	color: var(--text);
+	padding: 6px;
+	border-radius: var(--radius);
+	border: 1px solid rgba(255,255,255,0.08);
+	box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+	z-index: 60;
+}
+
+.toolbar button {
+	background: transparent;
+	border: 1px solid rgba(255,255,255,0.12);
+	color: var(--text);
+	padding: 6px 10px;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.toolbar button:hover {
+	background: rgba(255,255,255,0.06);
+}
+
+.accent {
+	color: var(--accent);
+}
+
+
