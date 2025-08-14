@@ -18,6 +18,9 @@ export type Block = {
 	start: ISODateTimeString;
 	end: ISODateTimeString;
 	confidence?: number; // 0..1
+	label?: string;
+	// Two-way calendar sync (optional provenance)
+	source?: 'local' | 'google' | 'microsoft';
+	externalId?: string;
+	updatedAt?: ISODateTimeString;
 };
-
-

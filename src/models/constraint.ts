@@ -10,6 +10,8 @@ export type Constraint = {
 	end: ISODateTimeString;
 	recurrence?: RecurrenceRule;
 	label?: string;
+	// Two-way calendar sync (optional provenance)
+	source?: 'local' | 'google' | 'microsoft';
+	externalId?: string; // provider event id
+	updatedAt?: ISODateTimeString;
 };
-
-
