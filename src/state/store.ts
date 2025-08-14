@@ -36,6 +36,8 @@ type Actions = {
 	addBlock: (input: Omit<Block, 'id'> & { id?: string }) => Promise<string>;
 	updateBlock: (id: string, updates: Partial<Block>) => Promise<void>;
 	deleteBlock: (id: string) => Promise<void>;
+  // Mood logs
+  addMood: (input: Omit<MoodLog, 'id'> & { id?: string }) => Promise<string>;
 };
 
 type MetaState = {
@@ -134,7 +136,16 @@ export const useAppStore = create<AppState>()(
 				const db = getDb();
 				await db.blocks.delete(id);
 				set({ blocks: get().blocks.filter((b) => b.id !== id) });
-			}
+      },
+
+      addMood: async (input) => {
+        const id = (input as any).id ?? nanoid();
+        const mood: MoodLog = { ...(input as any), id } as MoodLog;
+        const db = getDb();
+        await db.moods.add(mood);
+        set({ moods: [...get().moods, mood] });
+        return id;
+      }
 		}),
 		{
 			name: 'planner-store-v1',

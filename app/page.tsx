@@ -24,6 +24,9 @@ export default function HomePage() {
             <p>
                 <a href="/onboarding/integrations" style={{ color: 'var(--accent)' }}>{t('nav.onboarding.integrations')}</a>
             </p>
+            <p>
+                <a href="/review" style={{ color: 'var(--accent)' }}>Review (mood/energy)</a>
+            </p>
         </main>
     );
 }
