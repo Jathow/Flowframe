@@ -9,6 +9,7 @@ import { preferredDeepWindows as _preferredDeepWindows } from '../../src/engine/
 import { computeAutoThrottle, adjustPreferencesForThrottle, adjustBufferMinutes } from '../../src/engine/adaptive';
 import { useAppStore } from '../../src/state/store';
 import { suggestWeeklyCapacity } from '../../src/engine/capacity';
+import { distributeTasksAcrossWeek } from '../../src/engine/weekly';
 
 type BlockType = 'deep' | 'shallow' | 'break' | 'sleep' | 'commute' | 'workout' | 'meal' | 'buffer';
 type BlockItem = { id: string; title: string; minutes: number; type: BlockType };
@@ -242,6 +243,30 @@ export default function PlanPage() {
 					style={{ marginLeft: 8, padding: '6px 10px', borderRadius: 8, border: 0, background: '#374151', color: 'var(--text)', cursor: 'pointer' }}
 				>
 					Suggest next week capacity
+				</button>
+				<button
+					onClick={() => {
+						const demoTasks = [...backlog, ...customBacklog].map((b) => ({
+							id: b.id,
+							userId: 'u',
+							title: b.title,
+							area: 'work' as const,
+							estimateMinutes: b.minutes,
+							importance: 5,
+							energyType: b.type === 'deep' ? 'deep' : 'shallow',
+							flexibility: 5
+						}));
+						const constraints: any[] = [];
+						const prefs = { userId: 'u', areaWeights: { work: 5 }, deepWorkCapacity: 2, breakPreference: 5, sleepTargetHours: 8 } as any;
+						const dist = distributeTasksAcrossWeek(demoTasks as any, constraints as any, prefs);
+						const summary = dist.days
+							.map((d) => `${d.dateISO}: ${Math.round((d.assigned.reduce((s, a) => s + a.minutes, 0)) / 60)}h`)
+							.join('\n');
+						alert(`Weekly distribution starting ${dist.weekStartISO}:\n${summary}`);
+					}}
+					style={{ marginLeft: 8, padding: '6px 10px', borderRadius: 8, border: 0, background: '#374151', color: 'var(--text)', cursor: 'pointer' }}
+				>
+					Distribute tasks across week
 				</button>
 			</div>
 			<DndContext onDragEnd={onDragEnd}>
