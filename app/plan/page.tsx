@@ -6,6 +6,8 @@ import { EmptyState, SkeletonBlock } from '../ui';
 import { scheduleDay } from '../../src/engine/schedule';
 import { scoreSchedule } from '../../src/engine/confidence';
 import { preferredDeepWindows as _preferredDeepWindows } from '../../src/engine/schedule';
+import { computeAutoThrottle, adjustPreferencesForThrottle, adjustBufferMinutes } from '../../src/engine/adaptive';
+import { useAppStore } from '../../src/state/store';
 
 type BlockType = 'deep' | 'shallow' | 'break' | 'sleep' | 'commute' | 'workout' | 'meal' | 'buffer';
 type BlockItem = { id: string; title: string; minutes: number; type: BlockType };
@@ -52,6 +54,7 @@ function Droppable({ id, children }: { id: string; children: React.ReactNode }) 
 }
 
 export default function PlanPage() {
+  const moods = useAppStore((s) => s.moods);
 	const backlog = useMemo<BlockItem[]>(
 		() => [
 			{ id: 'b1', title: 'Write draft (90m)', minutes: 90, type: 'deep' },
@@ -197,7 +200,7 @@ export default function PlanPage() {
 			<div style={{ margin: '12px 0', padding: 8, border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}>
 				<strong style={{ fontSize: 14 }}>Auto-schedule (demo)</strong>
 				<p style={{ color: 'var(--muted)' }}>Generate a plan and show confidence.</p>
-				<button
+                <button
 					onClick={() => {
 						const demoTasks = [...backlog, ...customBacklog].map((b, i) => ({
 							id: b.id,
@@ -210,12 +213,20 @@ export default function PlanPage() {
 							flexibility: 5
 						}));
 						const constraints: any[] = [];
-						const prefs = { userId: 'u', areaWeights: { work: 5 }, deepWorkCapacity: 2, breakPreference: 5, sleepTargetHours: 8 };
-						const scheduled = scheduleDay(demoTasks as any, constraints as any, prefs as any, '2025-01-02', { chronotype: 'intermediate' });
+                        const basePrefs = { userId: 'u', areaWeights: { work: 5 }, deepWorkCapacity: 2, breakPreference: 5, sleepTargetHours: 8 };
+                        const throttle = computeAutoThrottle(moods.filter((m) => m.userId === 'local-user'));
+                        const prefs = adjustPreferencesForThrottle(basePrefs as any, throttle.throttleFactor) as any;
+                        const scheduled = scheduleDay(
+                          demoTasks as any,
+                          constraints as any,
+                          prefs as any,
+                          '2025-01-02',
+                          { chronotype: 'intermediate', bufferMinutes: adjustBufferMinutes(10, throttle.throttleFactor) }
+                        );
 						const total = demoTasks.reduce((s, t) => s + t.estimateMinutes, 0);
 						const windows = _preferredDeepWindows('intermediate');
 						const score = scoreSchedule(scheduled as any, prefs as any, constraints as any, total, { deepWindows: windows });
-						alert(`Confidence: ${(score * 100).toFixed(0)}% with ${scheduled.length} blocks`);
+                        alert(`Confidence: ${(score * 100).toFixed(0)}% with ${scheduled.length} blocks\nThrottle: ${(throttle.throttleFactor * 100).toFixed(0)}% (${throttle.reason})`);
 					}}
 					style={{ padding: '6px 10px', borderRadius: 8, border: 0, background: 'var(--accent)', color: 'var(--accent-contrast)', cursor: 'pointer' }}
 				>
