@@ -1,0 +1,12 @@
+{
+	"home.title": "Planificador de Optimización Diaria",
+	"home.init": "Aplicación Next.js (TypeScript) inicializada.",
+	"nav.onboarding.hard": "Comenzar onboarding: Restricciones fijas",
+	"nav.onboarding.lifestyle": "Siguiente: Estilo de vida y capacidad",
+	"nav.onboarding.areas": "Siguiente: Importancia por áreas",
+	"nav.onboarding.wellbeing": "Siguiente: Objetivos de bienestar",
+	"nav.onboarding.integrations": "Onboarding: Integraciones (ICS/CSV)",
+	"nav.plan": "Abrir vista de Plan (arrastrar y soltar)"
+}
+
+

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { useI18n } from './i18n';
 
 function getTheme(): 'dark' | 'light' {
 	if (typeof window === 'undefined') return 'dark';
@@ -10,6 +11,7 @@ function getTheme(): 'dark' | 'light' {
 }
 
 export function ThemeToolbar() {
+    const { locale, setLocale } = useI18n();
 	const [theme, setTheme] = useState<'dark' | 'light'>(getTheme());
 	const [contrast, setContrast] = useState<'normal' | 'high'>(() => (typeof window === 'undefined' ? 'normal' : (window.localStorage.getItem('contrast') as 'normal' | 'high') || 'normal'));
 	const [motion, setMotion] = useState<'normal' | 'reduce'>(() => (typeof window === 'undefined' ? 'normal' : (window.localStorage.getItem('motion') as 'normal' | 'reduce') || 'normal'));
@@ -45,6 +47,10 @@ export function ThemeToolbar() {
 			<button onClick={() => setMotion(motion === 'normal' ? 'reduce' : 'normal')} aria-pressed={motion === 'reduce'} aria-label="Toggle reduced motion">
 				Motion
 			</button>
+            <select value={locale} onChange={(e) => setLocale(e.target.value)} aria-label="Language">
+                <option value="en">EN</option>
+                <option value="es">ES</option>
+            </select>
 		</div>
 	);
 }

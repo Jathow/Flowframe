@@ -15,10 +15,21 @@ const I18nContext = createContext<I18nContextValue | null>(null);
 
 // Base English messages (scaffold). Keys are dot-notation strings.
 let enMessages: Record<string, string> = {};
+let esMessages: Record<string, string> = {};
 
 async function loadEnMessages(): Promise<Record<string, string>> {
 	try {
 		const res = await fetch('/locales/en.json', { cache: 'no-store' });
+		if (!res.ok) return {};
+		return (await res.json()) as Record<string, string>;
+	} catch {
+		return {};
+	}
+}
+
+async function loadEsMessages(): Promise<Record<string, string>> {
+	try {
+		const res = await fetch('/locales/es.json', { cache: 'no-store' });
 		if (!res.ok) return {};
 		return (await res.json()) as Record<string, string>;
 	} catch {
@@ -47,14 +58,18 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 		(async () => {
 			if (locale === 'en') {
 				enMessages = await loadEnMessages();
-				setLoaded((v) => !v); // trigger rerender
+				setLoaded((v) => !v);
+			} else if (locale === 'es') {
+				esMessages = await loadEsMessages();
+				setLoaded((v) => !v);
 			}
 		})();
 	}, [locale]);
 
 	const t = useCallback((key: string, vars?: Vars) => {
 		// Only 'en' for now; scaffold for future locales
-		const message = (locale === 'en' ? enMessages[key] : undefined) || key;
+		const dict = locale === 'en' ? enMessages : locale === 'es' ? esMessages : enMessages;
+		const message = dict[key] || key;
 		return format(message, vars);
 	}, [locale]);
 
