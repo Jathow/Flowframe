@@ -228,7 +228,7 @@ export default function PlanPage() {
                         );
 						const total = demoTasks.reduce((s, t) => s + t.estimateMinutes, 0);
 						const windows = _preferredDeepWindows('intermediate');
-						const score = scoreSchedule(scheduled as any, prefs as any, constraints as any, total, { deepWindows: windows });
+                        const score = scoreSchedule(scheduled as any, prefs as any, constraints as any, total, { deepWindows: windows, bufferPercent: adjustBufferMinutes(10, throttle.throttleFactor) });
                         alert(`Confidence: ${(score * 100).toFixed(0)}% with ${scheduled.length} blocks\nThrottle: ${(throttle.throttleFactor * 100).toFixed(0)}% (${throttle.reason})`);
 					}}
 					style={{ padding: '6px 10px', borderRadius: 8, border: 0, background: 'var(--accent)', color: 'var(--accent-contrast)', cursor: 'pointer' }}

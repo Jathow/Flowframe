@@ -11,7 +11,7 @@ export function scoreSchedule(
 	prefs: Preference,
 	constraints: Constraint[],
 	allTasksMinutes: number,
-	options: { deepWindows?: Array<[number, number]> } = {}
+	options: { deepWindows?: Array<[number, number]>; bufferPercent?: number } = {}
 ): number {
 	let score = 1.0;
 
@@ -34,6 +34,16 @@ export function scoreSchedule(
 		const ratio = deepBlocks.length > 0 ? aligned / deepBlocks.length : 1;
 		// Penalize misalignment up to 0.3
 		score -= (1 - ratio) * 0.3;
+	}
+
+	// Buffer adequacy: penalize low buffer usage if provided
+	if (typeof options.bufferPercent === 'number') {
+		const buffer = options.bufferPercent;
+		// Prefer around 10–20% buffer; penalize if below 8%
+		if (buffer < 8) {
+			const deficit = Math.min(10, 8 - buffer);
+			score -= (deficit / 10) * 0.1; // up to -0.1
+		}
 	}
 
 	// Break adequacy: long blocks without adjacent break
