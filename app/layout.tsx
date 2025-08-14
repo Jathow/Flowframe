@@ -6,6 +6,7 @@ import './globals.css';
 import { AnalyticsProvider } from './analytics-optin';
 import { AnalyticsRouter } from './analytics-router';
 import { InitState } from './init-state';
+import { PushOptIn } from './push-optin';
 
 export const metadata: Metadata = {
 	title: 'Planner',
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 			<body>
 				<AnalyticsProvider>
 					<PwaUi />
+					<PushOptIn />
 					<ThemeToolbar />
 					<AnalyticsRouter />
 					<InitState />
