@@ -14,16 +14,17 @@ type I18nContextValue = {
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 // Base English messages (scaffold). Keys are dot-notation strings.
-const enMessages: Record<string, string> = {
-	'home.title': 'Day-to-Day Optimization Planner',
-	'home.init': 'Initialized Next.js (TypeScript) app.',
-	'nav.onboarding.hard': 'Start onboarding: Hard constraints',
-	'nav.onboarding.lifestyle': 'Next: Lifestyle & capacity',
-	'nav.onboarding.areas': 'Next: Area importance',
-	'nav.onboarding.wellbeing': 'Next: Well-being targets',
-	'nav.onboarding.integrations': 'Onboarding: Integrations (ICS/CSV)',
-	'nav.plan': 'Open Plan view (drag & drop)'
-};
+let enMessages: Record<string, string> = {};
+
+async function loadEnMessages(): Promise<Record<string, string>> {
+	try {
+		const res = await fetch('/locales/en.json', { cache: 'no-store' });
+		if (!res.ok) return {};
+		return (await res.json()) as Record<string, string>;
+	} catch {
+		return {};
+	}
+}
 
 function format(template: string, vars?: Vars): string {
 	if (!vars) return template;
@@ -35,15 +36,25 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 		if (typeof window === 'undefined') return 'en';
 		return window.localStorage.getItem('locale') || 'en';
 	});
+	const [, setLoaded] = useState(false);
 
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
 		window.localStorage.setItem('locale', locale);
 	}, [locale]);
 
+	useEffect(() => {
+		(async () => {
+			if (locale === 'en') {
+				enMessages = await loadEnMessages();
+				setLoaded((v) => !v); // trigger rerender
+			}
+		})();
+	}, [locale]);
+
 	const t = useCallback((key: string, vars?: Vars) => {
 		// Only 'en' for now; scaffold for future locales
-		const message = enMessages[key] || key;
+		const message = (locale === 'en' ? enMessages[key] : undefined) || key;
 		return format(message, vars);
 	}, [locale]);
 

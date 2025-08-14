@@ -1,0 +1,12 @@
+{
+	"home.title": "Day-to-Day Optimization Planner",
+	"home.init": "Initialized Next.js (TypeScript) app.",
+	"nav.onboarding.hard": "Start onboarding: Hard constraints",
+	"nav.onboarding.lifestyle": "Next: Lifestyle & capacity",
+	"nav.onboarding.areas": "Next: Area importance",
+	"nav.onboarding.wellbeing": "Next: Well-being targets",
+	"nav.onboarding.integrations": "Onboarding: Integrations (ICS/CSV)",
+	"nav.plan": "Open Plan view (drag & drop)"
+}
+
+
